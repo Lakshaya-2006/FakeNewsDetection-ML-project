@@ -1,0 +1,9 @@
+fastapi
+uvicorn
+torch
+transformers
+datasets
+scikit-learn
+python-dotenv
+requests
+accelerate
