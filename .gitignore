@@ -23,29 +23,17 @@ dist-ssr
 *.sln
 *.sw?
 # Python
+# ML Models
+backend/model/
+model/
+
+# Python cache
 __pycache__/
 *.pyc
-venv/
-.env
-
-# ML files
-*.h5
-*.pt
-*.pth
-*.bin
 
 # Dataset
 dataset/
 
-# Results
-results/
-
-# Node
-node_modules/
-dist/
-
-# Logs
-*.log
-
-# VS Code
-.vscode/
+# Environment
+venv/
+.env
