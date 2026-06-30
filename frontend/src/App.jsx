@@ -25,25 +25,7 @@ function App() {
   const fileInputRef = useRef(null);
   
   // History list from localstorage or default empty
-  const [history, setHistory] = useState(() => {
-    const saved = localStorage.getItem('healthVerifyHistory');
-    return saved ? JSON.parse(saved) : [
-      {
-        id: "hist-1",
-        statement: "Drinking hot lemon water cures cancer.",
-        verdict: "FAKE",
-        confidence: 97,
-        date: "2026-06-25 15:40",
-      },
-      {
-        id: "hist-2",
-        statement: "Vitamin C supplementation reduces the duration and severity of the common cold.",
-        verdict: "REAL",
-        confidence: 82,
-        date: "2026-06-26 09:12",
-      }
-    ];
-  });
+  const [history, setHistory] = useState([]);
 
   const [newsInput, setNewsInput] = useState('');
   const [isAnalyzing, setIsAnalyzing] = useState(false);
@@ -61,9 +43,50 @@ function App() {
   }, [darkMode]);
 
   // Persist history
-  useEffect(() => {
-    localStorage.setItem('healthVerifyHistory', JSON.stringify(history));
-  }, [history]);
+ useEffect(() => {
+
+  const loadHistory = async () => {
+
+    try {
+
+      const response = await fetch(
+        "http://127.0.0.1:8000/history"
+      );
+
+      const data = await response.json();
+
+
+      const formattedHistory = data.map((item, index) => ({
+        
+        id: index,
+
+        statement: item.text,
+
+        verdict: item.prediction,
+
+        confidence: item.confidence,
+
+        date: new Date(item.date).toLocaleString()
+
+      }));
+
+
+      setHistory(formattedHistory);
+
+
+    } catch(error) {
+
+      console.log("History loading failed", error);
+
+    }
+
+  };
+
+
+  loadHistory();
+
+
+}, []);
 
   // Persist user auth session
   useEffect(() => {
@@ -178,30 +201,32 @@ const handleVerify = async (textToVerify) => {
     setCurrentResult(result);
 
 
+// Reload history from MongoDB
 
-    const now = new Date();
-
-
-    const historyItem = {
-
-      id: Date.now(),
-
-      statement: queryText,
-
-      verdict: data.prediction,
-
-      confidence: data.confidence,
-
-      date: now.toLocaleString()
-
-    };
+const historyResponse = await fetch(
+  "http://127.0.0.1:8000/history"
+);
 
 
+const historyData = await historyResponse.json();
 
-    setHistory(prev => [
-      historyItem,
-      ...prev
-    ]);
+
+const formattedHistory = historyData.map((item,index)=>({
+
+  id:index,
+
+  statement:item.text,
+
+  verdict:item.prediction,
+
+  confidence:item.confidence,
+
+  date:new Date(item.date).toLocaleString()
+
+}));
+
+
+setHistory(formattedHistory);
 
 
 
@@ -905,33 +930,49 @@ function AuthPage({ onLogin, onCancel }) {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    setError('');
+  const handleSubmit = async (e) => {
+  e.preventDefault();
+  setError('');
+  setIsLoading(true);
 
-    // Basic Validation
-    if (isSignUp && !name.trim()) {
-      setError('Please enter your name.');
-      return;
-    }
-    if (!email.trim() || !email.includes('@')) {
-      setError('Please enter a valid email address.');
-      return;
-    }
-    if (password.length < 6) {
-      setError('Password must be at least 6 characters long.');
-      return;
-    }
+  try {
 
-    setIsLoading(true);
-    setTimeout(() => {
+    const endpoint = isSignUp
+      ? "http://127.0.0.1:8000/register"
+      : "http://127.0.0.1:8000/login";
+
+    const response = await fetch(endpoint, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        name,
+        email,
+        password
+      })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      setError(data.detail || "Something went wrong");
       setIsLoading(false);
-      onLogin({
-        name: isSignUp ? name : email.split('@')[0],
-        email: email
-      });
-    }, 1500);
-  };
+      return;
+    }
+
+    onLogin({
+      name: data.name || name,
+      email: email
+    });
+
+  } catch (error) {
+    console.log(error);
+    setError("Cannot connect to backend");
+  }
+
+  setIsLoading(false);
+};
 
   const handleSocialLogin = (provider) => {
     setIsLoading(true);

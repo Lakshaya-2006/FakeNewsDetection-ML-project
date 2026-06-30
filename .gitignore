@@ -22,3 +22,30 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+# Python
+__pycache__/
+*.pyc
+venv/
+.env
+
+# ML files
+*.h5
+*.pt
+*.pth
+*.bin
+
+# Dataset
+dataset/
+
+# Results
+results/
+
+# Node
+node_modules/
+dist/
+
+# Logs
+*.log
+
+# VS Code
+.vscode/

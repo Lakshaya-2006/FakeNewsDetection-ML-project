@@ -156,8 +156,12 @@ def register(user:User):
 
 
     return {
-        "message":"Registration successful"
-    }
+       
+    "message":"Registration successful",
+    "name": user.name,
+    "email": user.email
+}
+    
 
 @app.post("/login")
 def login(user:User):
