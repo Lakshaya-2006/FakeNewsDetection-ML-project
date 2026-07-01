@@ -1,25 +1,33 @@
+import os
 from pymongo import MongoClient
 
 
-client = MongoClient(
-    "mongodb://127.0.0.1:27017"
-)
+# Get MongoDB Atlas URL from Render environment variable
+MONGO_URI = os.getenv("MONGO_URI")
 
 
+if not MONGO_URI:
+    raise Exception("MONGO_URI is not set")
+
+
+client = MongoClient(MONGO_URI)
+
+
+# Database name
 db = client["health_fake_news"]
 
 
+# Collections
 history_collection = db["history"]
 
 users_collection = db["users"]
 
 
 
-
-
-# test connection
+# Test connection
 try:
     client.admin.command("ping")
-    print("MongoDB connected successfully")
+    print("MongoDB Atlas connected successfully")
+
 except Exception as e:
-    print("MongoDB connection failed", e)
+    print("MongoDB connection failed:", e)
