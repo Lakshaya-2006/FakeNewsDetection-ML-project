@@ -37,3 +37,5 @@ dataset/
 # Environment
 venv/
 .env
+
+backend/results/
