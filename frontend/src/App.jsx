@@ -50,8 +50,8 @@ function App() {
     try {
 
       const response = await fetch(
-        "http://127.0.0.1:8000/history"
-      );
+  "https://laks2006-fakesnews-dl.hf.space/history"
+);
 
       const data = await response.json();
 
@@ -144,7 +144,7 @@ const handleVerify = async (textToVerify) => {
   try {
 
     const response = await fetch(
-      "http://127.0.0.1:8000/predict",
+  "https://laks2006-fakesnews-dl.hf.space/predict",
       {
         method: "POST",
 
@@ -204,7 +204,7 @@ const handleVerify = async (textToVerify) => {
 // Reload history from MongoDB
 
 const historyResponse = await fetch(
-  "http://127.0.0.1:8000/history"
+  "https://laks2006-fakesnews-dl.hf.space/history"
 );
 
 
@@ -938,8 +938,8 @@ function AuthPage({ onLogin, onCancel }) {
   try {
 
     const endpoint = isSignUp
-      ? "http://127.0.0.1:8000/register"
-      : "http://127.0.0.1:8000/login";
+  ? "https://laks2006-fakesnews-dl.hf.space/register"
+  : "https://laks2006-fakesnews-dl.hf.space/login";
 
     const response = await fetch(endpoint, {
       method: "POST",
